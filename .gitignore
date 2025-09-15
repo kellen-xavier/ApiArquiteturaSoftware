@@ -6,6 +6,7 @@ target/
 # Compiled Java class files
 *.class
 application.properties
+src/main/resources/application.properties
 # Build output
 bin/
 out/
