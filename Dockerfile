@@ -1,14 +1,12 @@
-# Usa a imagem oficial do OpenJDK 17 (ajuste conforme sua versão)
-FROM openjdk:17-jdk-slim
-
-# Cria diretório de trabalho
+# Etapa 1: Build do projeto Java com Maven
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copia o JAR gerado pelo Maven para dentro do container
-COPY target/ApiArquiteturaSoftware-0.0.1-SNAPSHOT.jar app.jar
-
-# Expõe a porta padrão do Spring Boot (Render vai definir PORT como variável)
+# Etapa 2: Imagem final, só com o JAR
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Executa a aplicação, forçando o uso da porta do Render
 ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=$PORT"]
